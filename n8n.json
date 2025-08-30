@@ -1,0 +1,57 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "path": "8b6250f1-fe56-4feb-9b8c-5883a4fd7b49",
+        "responseMode": "responseNode",
+        "httpMethod": ["POST"]
+      },
+      "id": "Webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-400, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: { chatInput: $json.chatInput } }];"
+      },
+      "id": "Set",
+      "name": "Set",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [-200, 200]
+    },
+    {
+      "parameters": {
+        "prompt": "{{ $json.chatInput }}"
+      },
+      "id": "LLM",
+      "name": "Basic LLM Chain",
+      "type": "n8n-nodes-base.llmChain",
+      "typeVersion": 1,
+      "position": [0, 200]
+    },
+    {
+      "parameters": {
+        "responseData": "{{ $json.text }}"
+      },
+      "id": "Respond",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [200, 200]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Set", "type": "main", "index": 0 }]]
+    },
+    "Set": {
+      "main": [[{ "node": "LLM", "type": "main", "index": 0 }]]
+    },
+    "LLM": {
+      "main": [[{ "node": "Respond", "type": "main", "index": 0 }]]
+    }
+  }
+}
